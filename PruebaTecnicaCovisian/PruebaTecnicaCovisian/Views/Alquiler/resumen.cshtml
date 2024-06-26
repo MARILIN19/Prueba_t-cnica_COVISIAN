@@ -1,0 +1,66 @@
+@{
+    ViewData["Title"] = "Resumen";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h2>Alquileres por Día</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody id="alquileresPorDia">
+        </tbody>
+    </table>
+</div>
+
+<div>
+    <h2>Alquileres por Mes</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Año</th>
+                <th>Mes</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody id="alquileresPorMes">
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        function loadAlquileres() {
+            $.ajax({
+                url: '/Alquiler/AlquileresPorDiaMes',
+                method: 'GET',
+                success: function (data) {
+                    var porDia = data.porDia;
+                    var porMes = data.porMes;
+
+                    var alquileresPorDia = $('#alquileresPorDia');
+                    alquileresPorDia.empty();
+                    porDia.forEach(function (item) {
+                        alquileresPorDia.append('<tr><td>' + new Date(item.fecha).toLocaleDateString() + '</td><td>' + item.count + '</td></tr>');
+                    });
+
+                    var alquileresPorMes = $('#alquileresPorMes');
+                    alquileresPorMes.empty();
+                    porMes.forEach(function (item) {
+                        alquileresPorMes.append('<tr><td>' + item.año + '</td><td>' + item.mes + '</td><td>' + item.count + '</td></tr>');
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            loadAlquileres();
+            setInterval(loadAlquileres, 60000); // Recarga cada 1 minuto
+        });
+    </script>
+}
